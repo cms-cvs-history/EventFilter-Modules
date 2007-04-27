@@ -18,7 +18,7 @@
  * - DQMServices/NodeROOT/src/SenderBase.cc
  * - DQMServices/NodeROOT/src/ReceiverBase.cc
  *
- * $Id: FUShmDQMOutputService.cc,v 1.1 2007/04/01 05:18:54 hcheung Exp $
+ * $Id: FUShmDQMOutputService.cc,v 1.2 2007/04/06 01:11:19 hcheung Exp $
  */
 
 #include "EventFilter/Modules/interface/FUShmDQMOutputService.h"
@@ -44,7 +44,8 @@ using namespace std;
  * FUShmDQMOutputService constructor.
  */
 FUShmDQMOutputService::FUShmDQMOutputService(const edm::ParameterSet &pset,
-                                   edm::ActivityRegistry &actReg)
+					     edm::ActivityRegistry &actReg) : 
+  shmBuffer_(0)  
 {
   if (DSS_DEBUG) {cout << "FUShmDQMOutputService Constructor" << endl;}
 
@@ -106,12 +107,6 @@ FUShmDQMOutputService::FUShmDQMOutputService(const edm::ParameterSet &pset,
   // we will count lumi section numbers from this time
   timeInSecSinceUTC_ = static_cast<double>(now.tv_sec) + (static_cast<double>(now.tv_usec)/1000000.0);
 
-  shmBuffer_ = evf::FUShmBuffer::getShmBuffer();
-  if(!shmBuffer_) edm::LogError("FUDQMShmOutputService") 
-      << " Error getting shared memory buffer in constructor. " 
-      << " Make sure you configure the ResourceBroker before the FUEventProcessor! "
-      << " Will try again at first output. This could be fatal!";
-
 }
 
 /**
@@ -166,12 +161,6 @@ void FUShmDQMOutputService::postEventProcessing(const edm::Event &event,
     gettimeofday(&now, &dummyTZ);
     // we will count lumi section numbers from this time
     timeInSecSinceUTC_ = static_cast<double>(now.tv_sec) + (static_cast<double>(now.tv_usec)/1000000.0);
-    // get shared memory if job had stopped and we released the shared memory
-    if(!shmBuffer_) shmBuffer_ = evf::FUShmBuffer::getShmBuffer();
-    if(!shmBuffer_) edm::LogError("FUShmDQMOutputService")
-      << " Error getting shared memory in first event initialization "
-      << " Make sure you configure the ResourceBroker before the FUEventProcessor! "
-      << " This is probably fatal!";
   }
 
   // We send a DQMEvent when the correct number of luminosity sections have passed
@@ -345,8 +334,6 @@ void FUShmDQMOutputService::postEndJobProcessing()
   }
   // since the service is not destroyed we need to take care of endjob items here
   initializationIsNeeded_ = true;
-  // we need to detach the shared memory so the ResourceBroker can halt
-  shmdt(shmBuffer_);
 }
 
 /**
@@ -546,4 +533,29 @@ void FUShmDQMOutputService::postModuleConstructionProcessing(const edm::ModuleDe
     cout << "FUShmDQMOutputService::postModuleConstructionProcessing called for "
          << moduleDesc.moduleName() << endl;
   }
+}
+
+bool FUShmDQMOutputService::attachToShm()
+{
+  if(0==shmBuffer_) {
+    shmBuffer_ = evf::FUShmBuffer::getShmBuffer();
+    if (0==shmBuffer_) {
+      edm::LogError("FUDQMShmOutputService")<<"Failed to attach to shared memory";
+      return false;
+    }
+    return true;    
+  }
+  return false;
+
+}
+
+
+
+bool FUShmDQMOutputService::detachFromShm()
+{
+  if(0!=shmBuffer_) {
+    shmdt(shmBuffer_);
+    shmBuffer_ = 0;
+  }
+  return true;
 }
