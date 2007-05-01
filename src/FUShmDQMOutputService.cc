@@ -18,7 +18,7 @@
  * - DQMServices/NodeROOT/src/SenderBase.cc
  * - DQMServices/NodeROOT/src/ReceiverBase.cc
  *
- * $Id: FUShmDQMOutputService.cc,v 1.2 2007/04/06 01:11:19 hcheung Exp $
+ * $Id: FUShmDQMOutputService.cc,v 1.2.2.1 2007/04/27 14:08:54 meschi Exp $
  */
 
 #include "EventFilter/Modules/interface/FUShmDQMOutputService.h"
@@ -241,6 +241,7 @@ void FUShmDQMOutputService::postEventProcessing(const edm::Event &event,
     // create the message
     DQMEventMsgBuilder dqmMsgBuilder(&messageBuffer_[0], messageBuffer_.size(),
                                      event.id().run(), event.id().event(),
+                                     event.time(),
                                      lumiSectionTag, updateNumber,
                                      edm::getReleaseVersion(), dirName,
                                      toTable);
