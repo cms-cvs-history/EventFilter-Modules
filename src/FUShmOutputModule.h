@@ -6,13 +6,14 @@
      Header file shared memory to be used with FUShmOutputModule.
      See CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUShmOutputModule.h,v 1.7 2011/04/14 15:24:51 mommsen Exp $
+   $Id: FUShmOutputModule.h,v 1.8 2011/08/17 15:30:01 meschi Exp $
 */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "IOPool/Streamer/interface/InitMsgBuilder.h"
 #include "IOPool/Streamer/interface/EventMsgBuilder.h"
+#include "FWCore/Framework/interface/LuminosityBlock.h"
 
 #include "EventFilter/ShmBuffer/interface/FUShmBuffer.h"
 #include "EventFilter/Utilities/interface/ShmOutputModuleRegistry.h"
@@ -65,7 +66,6 @@ namespace edm
     void stop();
     // No parameters.
     static void fillDescription(ParameterSetDescription&) {}
-
   private:
 
     evf::FUShmBuffer* shmBuffer_;
@@ -74,6 +74,17 @@ namespace edm
 
     static bool fuIdsInitialized_;
     static uint32 fuGuidValue_;
+    bool postponeInitMsg_;
+    bool sentInitMsg_;
+    unsigned char * initBuf_;
+    unsigned int initBufSize_;
+    bool postponeStart_;
+    bool startDone_;
+
+  public:
+    //void writeLuminosityBlock(LuminosityBlockPrincipal const&);
+    void setPostponeInitMsg();
+    void sendPostponedInitMsg();
 
   };
 }
