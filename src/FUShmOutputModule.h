@@ -6,7 +6,7 @@
      Header file shared memory to be used with FUShmOutputModule.
      See CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUShmOutputModule.h,v 1.8 2011/08/17 15:30:01 meschi Exp $
+   $Id: FUShmOutputModule.h,v 1.8.2.1 2012/04/16 14:36:08 smorovic Exp $
 */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -84,6 +84,7 @@ namespace edm
   public:
     //void writeLuminosityBlock(LuminosityBlockPrincipal const&);
     void setPostponeInitMsg();
+    void sendPostponedStart();
     void sendPostponedInitMsg();
 
   };

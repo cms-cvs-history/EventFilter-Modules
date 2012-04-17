@@ -4,7 +4,7 @@
      the resource broker to send to the Storage Manager.
      See the CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUShmOutputModule.cc,v 1.14 2011/08/17 15:30:01 meschi Exp $
+   $Id: FUShmOutputModule.cc,v 1.14.2.1 2012/04/16 14:36:08 smorovic Exp $
 */
 
 #include "EventFilter/Utilities/interface/i2oEvfMsgs.h"
@@ -127,12 +127,18 @@ namespace edm
     startDone_=false;
   }
 
-  void FUShmOutputModule::sendPostponedInitMsg() 
-  {
-    
-    if (!sentInitMsg_ && postponeInitMsg_) {
+  void FUShmOutputModule::sendPostponedStart() {
       postponeStart_=false;
       start();
+  }
+
+  void FUShmOutputModule::sendPostponedInitMsg() 
+  {
+    if (postponeStart_) {
+      postponeStart_=false;
+      start();
+    }
+    if (!sentInitMsg_ && postponeInitMsg_) {
       if(!shmBuffer_) shmBuffer_ = sm_sharedmemory.getShmBuffer();
       if(!shmBuffer_) edm::LogError("FUShmOutputModule")
 	<< " Error getting shared memory buffer for INIT. "
