@@ -6,7 +6,7 @@
      Header file shared memory to be used with FUShmOutputModule.
      See CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUShmOutputModule.h,v 1.8.2.1 2012/04/16 14:36:08 smorovic Exp $
+   $Id: FUShmOutputModule.h,v 1.8.2.2 2012/04/17 13:50:52 smorovic Exp $
 */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -42,6 +42,9 @@ struct SM_SharedMemoryHandle
      shmdt(shmBuffer_);
      shmBuffer_ = 0;
    }
+  }
+  evf::FUShmBuffer* getBufferRef() {
+    return shmBuffer_;
   }
 
   evf::FUShmBuffer* shmBuffer_;
@@ -79,13 +82,15 @@ namespace edm
     unsigned char * initBuf_;
     unsigned int initBufSize_;
     bool postponeStart_;
-    bool startDone_;
+    unsigned int nExpectedEPs_;
 
   public:
     //void writeLuminosityBlock(LuminosityBlockPrincipal const&);
     void setPostponeInitMsg();
     void sendPostponedStart();
     void sendPostponedInitMsg();
+    void setNExpectedEPs(unsigned int EPs);
+    void unregisterFromShm();
 
   };
 }
