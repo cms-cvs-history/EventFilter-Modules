@@ -4,7 +4,7 @@
      the resource broker to send to the Storage Manager.
      See the CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUShmOutputModule.cc,v 1.14.2.3 2012/04/20 07:22:50 smorovic Exp $
+   $Id: FUShmOutputModule.cc,v 1.14.2.4 2012/04/22 17:57:12 smorovic Exp $
 */
 
 #include "EventFilter/Utilities/interface/i2oEvfMsgs.h"
@@ -89,7 +89,6 @@ namespace edm
       return;
     }
 
-    std::cout << "output header"<<std::endl;
     sentInitMsg_=true;
     count_ = 0;
     if(!shmBuffer_) shmBuffer_ = sm_sharedmemory.getShmBuffer();
@@ -107,7 +106,6 @@ namespace edm
       uint32 dmoduleId = dummymsg.outputModuleId();
 
       //bool ret = shmBuffer_->writeRecoInitMsg(dmoduleId, buffer, size);
-      std::cout << "write init"<<std::endl;
       bool ret = sm_sharedmemory.getShmBuffer()->writeRecoInitMsg(dmoduleId, getpid(), fuGuidValue_, buffer, size,nExpectedEPs_);
       if(!ret) edm::LogError("FUShmOutputModule") << " Error writing preamble to ShmBuffer";
     }
@@ -142,7 +140,6 @@ namespace edm
 	FDEBUG(10) << "writing out (postponed) INIT message with size = " << initBufSize_ << std::endl;
 	InitMsgView dummymsg(initBuf_);
 	uint32 dmoduleId = dummymsg.outputModuleId();
-        std::cout << "write init2"<<std::endl;
 	bool ret = sm_sharedmemory.getShmBuffer()->writeRecoInitMsg(dmoduleId, getpid(), fuGuidValue_, initBuf_, initBufSize_,nExpectedEPs_);
 	if(!ret) edm::LogError("FUShmOutputModule") << " Error writing preamble to ShmBuffer";
       }
@@ -163,7 +160,6 @@ namespace edm
       << " No event is sent - this is fatal! Should throw here";
     else
     {
-      std::cout << "write event"<<std::endl;
       count_++;
       unsigned char* buffer = (unsigned char*) eventMessage.startAddress();
       unsigned int size = eventMessage.size();
@@ -181,7 +177,6 @@ namespace edm
   void FUShmOutputModule::start()
   {
     if (postponeStart_) return;
-    std::cout << "fushm output start"<<std::endl;
     //shmBuffer_ = evf::FUShmBuffer::getShmBuffer();
     shmBuffer_ = sm_sharedmemory.getShmBuffer();
     if(0==shmBuffer_) 
@@ -197,7 +192,6 @@ namespace edm
   {
     FDEBUG(9) << "FUShmOutputModule: sending terminate run" << std::endl;
     if(0!=shmBuffer_){
-      std::cout << "fushm output stop"<<std::endl;
       sm_sharedmemory.detachShmBuffer();
       //shmdt(shmBuffer_);
       shmBuffer_ = 0;
@@ -211,7 +205,6 @@ namespace edm
   void FUShmOutputModule::unregisterFromShm() {
     shmBuffer_=sm_sharedmemory.getBufferRef();
     if (0!=shmBuffer_) {
-      std::cout << "fushm output stop"<<std::endl;
       shmBuffer_->removeClientPrcId(getpid());
     }
   }
