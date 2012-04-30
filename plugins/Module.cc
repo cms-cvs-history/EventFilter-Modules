@@ -11,9 +11,10 @@ typedef edm::StreamerOutputModule<edm::FUShmOutputModule> ShmStreamConsumer;
 
 using edm::FUShmOutputModule;
 using namespace edm::serviceregistry;
+using namespace evf;
 
 typedef AllArgsMaker<FUShmDQMOutputService> dssMaker;
-typedef ParameterSetMaker<evf::ShmOutputModuleRegistry> maker3;
+typedef ParameterSetMaker<ShmOutputModuleRegistry> maker3;
 
 
 DEFINE_FWK_MODULE(ShmStreamConsumer);

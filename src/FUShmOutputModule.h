@@ -6,7 +6,7 @@
      Header file shared memory to be used with FUShmOutputModule.
      See CMS EvF Storage Manager wiki page for further notes.
 
-   $Id: FUShmOutputModule.h,v 1.8.2.2 2012/04/17 13:50:52 smorovic Exp $
+   $Id: FUShmOutputModule.h,v 1.8.2.3 2012/04/20 07:22:50 smorovic Exp $
 */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -16,7 +16,7 @@
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 
 #include "EventFilter/ShmBuffer/interface/FUShmBuffer.h"
-#include "EventFilter/Utilities/interface/ShmOutputModuleRegistry.h"
+#include "EventFilter/Modules/interface/ShmOutputModuleRegistry.h"
 
 #include <iostream>
 
